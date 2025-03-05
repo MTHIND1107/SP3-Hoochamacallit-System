@@ -46,11 +46,40 @@ const char *status_messages[] = {
     "Machine is Off-line"
 };
 int main(void){
+    message_buf messageBuffer;
+    size_t bufferLength;
+    pid_t pid = getpid();
     //Checking for the message queue
     int msgQueueId = msgQueueExists();
     //If queue id found, then the first message sent to the DR
     successMessage(msgQueueId);
+    //This is the main loop where the random messages are sent until the random number lands on Machine is off-line.
+    srand(time(NULL));
+    while (1) {
+        // Generate random status
+        int status = rand() % 7;
 
+        // Prepare message
+        snprintf(messageBuffer.mtext, sizeof(messageBuffer.mtext), "PID: %d, Status: %s", pid, status_messages[status]);
+        bufferLength = strlen(messageBuffer.mtext) + 1;
+
+        // Send message
+        if (msgsnd(msgQueueId, &messageBuffer, bufferLength, IPC_NOWAIT) < 0) {
+            perror("msgsnd");
+            exit(1);
+        }
+        log_message(pid, status);
+
+        // Exit if status is "Machine is Off-line"
+        if (status == 6) {
+            break;
+        }
+
+        // Sleep for a random time between 10 and 30 seconds
+        sleep(10 + rand() % 21); //CHANGE THESE TO CONSTANTS
+    }
+
+    return 0;
 }
 
 
@@ -98,7 +127,7 @@ void successMessage(int msgQueueId){
         perror("msgsnd");
         exit(1);
     }
-    log_message(messageBuffer.mtext); //Logs the message for DC
+    log_message(pid,0); //Logs the message for DC PID and '0' for the everything OKAY message.
 }
 /*
 * Name: log_message()
@@ -121,3 +150,4 @@ void log_message(pid_t pid, int status) {
         fclose(log_file);
     }
 }
+
