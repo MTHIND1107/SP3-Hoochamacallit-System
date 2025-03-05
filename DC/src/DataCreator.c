@@ -46,7 +46,11 @@ const char *status_messages[] = {
     "Machine is Off-line"
 };
 int main(void){
-    
+    //Checking for the message queue
+    int msgQueueId = msgQueueExists();
+    //If queue id found, then the first message sent to the DR
+    successMessage(msgQueueId);
+
 }
 
 
@@ -74,4 +78,25 @@ int msgQueueExists(void){
         sleep(10); //Sleep in for 10 seconds
     }
     return msgQueueId;
+}
+/*
+* Name: successMessage()
+* Returns: nothing
+* Parameters: int msgQueueId
+* Description: Sends the initial message after the message queue is found.
+*              And laso logs in the message for DC.
+*/
+void successMessage(int msgQueueId){
+    message_buf messageBuffer;
+    size_t bufferLength;
+    messageBuffer.mtype = 1;
+    //messageBuffer contains the PID and the first message
+    snprintf(messageBuffer.mtext, sizeof(sbuf.mtext), "PID: %d, %s", pid, status_messages[0]);
+    bufferLength = strlen(messageBuffer.mtext) + 1;
+    // Initial message sent to DR.
+    if (msgsnd(msgQueueId, &messageBuffer, bufferLength, IPC_NOWAIT) < 0) {
+        perror("msgsnd");
+        exit(1);
+    }
+    log_message(messageBuffer.mtext); //Logs the message for DC
 }
