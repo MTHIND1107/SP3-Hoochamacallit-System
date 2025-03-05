@@ -100,3 +100,24 @@ void successMessage(int msgQueueId){
     }
     log_message(messageBuffer.mtext); //Logs the message for DC
 }
+/*
+* Name: log_message()
+* Returns: nothing
+* Parameters: pid_t pid, int status
+* Description: For logging in the message in the log file in the temp folder.
+*              And also implemeting the format provided for keeping in the logs.
+*/
+void log_message(pid_t pid, int status) {
+    FILE *log_file = fopen("/tmp/dataCreator.log", "a"); //The log file position
+    if (log_file != NULL) {
+        time_t now = time(NULL);
+        struct tm *local_time = localtime(&now);//The current time
+        char time_str[20];
+        strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", local_time); //The time format created according to the example shown
+        //Prints the entire log format to the log file in the way asked for.
+        //Example Format:
+        //[2020-03-06 21:05:07] : DC [5687] – MSG SENT – Status 2 (Safety Button Failure)
+        fprintf(log_file, "[%s] : DC [%d] - MSG SENT - Status %d (%s)\n", time_str, pid, status, status_messages[status]);
+        fclose(log_file);
+    }
+}
