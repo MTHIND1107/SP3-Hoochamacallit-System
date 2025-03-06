@@ -79,3 +79,51 @@ void delete_message_queue() {
         log_event(" Message queue not found");
     }
 }
+
+// Execute the action from the Wheel of Destruction
+void execute_action(int action) {
+    char log_msg[100];
+
+    switch (action) {
+        case 0: case 8: case 19:
+            snprintf(log_msg, sizeof(log_msg), "DX WOD rolled %02d – Doing nothing", action);
+            log_event(log_msg);
+            break;
+        case 1: case 4: case 11:
+            kill_dc(1);
+            break;
+        case 3: case 6: case 13:
+            kill_dc(2);
+            break;
+        case 2: case 5: case 15:
+            kill_dc(3);
+            break;
+        case 7:
+            kill_dc(4);
+            break;
+        case 9:
+            kill_dc(5);
+            break;
+        case 12:
+            kill_dc(6);
+            break;
+        case 14:
+            kill_dc(7);
+            break;
+        case 16:
+            kill_dc(8);
+            break;
+        case 18:
+            kill_dc(9);
+            break;
+        case 20:
+            kill_dc(10);
+            break;
+        case 10: case 17:
+            delete_message_queue();
+            break;
+        default:
+            snprintf(log_msg, sizeof(log_msg), "DX WOD rolled an invalid number %02d", action);
+            log_event(log_msg);
+    }
+}
