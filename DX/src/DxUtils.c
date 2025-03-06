@@ -52,16 +52,30 @@ void kill_dc(int dc_id) {
         if (fgets(pid_str, sizeof(pid_str), cmd) != NULL) {
             int pid = atoi(pid_str);
             if (kill(pid, SIGHUP) == 0) {
-                snprintf(log_msg, sizeof(log_msg), "DX WOD rolled kill DC-%02d – Successfully killed process %d", dc_id, pid);
+                snprintf(log_msg, sizeof(log_msg), "DX WOD rolled kill DC-%02d Successfully killed process %d", dc_id, pid);
             } else {
-                snprintf(log_msg, sizeof(log_msg), "DX WOD rolled kill DC-%02d – Failed to kill process %d", dc_id, pid);
+                snprintf(log_msg, sizeof(log_msg), "DX WOD rolled kill DC-%02d Failed to kill process %d", dc_id, pid);
             }
         } else {
-            snprintf(log_msg, sizeof(log_msg), "DX WOD rolled kill DC-%02d – No such process found", dc_id);
+            snprintf(log_msg, sizeof(log_msg), "DX WOD rolled kill DC-%02d No such process found", dc_id);
         }
         pclose(cmd);
     } else {
-        snprintf(log_msg, sizeof(log_msg), "DX WOD rolled kill DC-%02d – Error executing pgrep", dc_id);
+        snprintf(log_msg, sizeof(log_msg), "DX WOD rolled kill DC-%02d Error executing pgrep", dc_id);
     }
     log_event(log_msg);
+}
+
+// Delete the message queue
+void delete_message_queue() {
+    int msg_queue_id = msgget(MSG_QUEUE_KEY, 0);
+    if (msg_queue_id != -1) {
+        if (msgctl(msg_queue_id, IPC_RMID, NULL) == 0) {
+            log_event("Successfully deleted message queue");
+        } else {
+            log_event("Failed to delete message queue");
+        }
+    } else {
+        log_event(" Message queue not found");
+    }
 }
