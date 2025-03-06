@@ -31,3 +31,37 @@ void log_event(const char *message) {
         fclose(log_file);
     }
 }
+
+// Check if message queue exists
+int check_message_queue() {
+    int msg_queue_id = msgget(MSG_QUEUE_KEY, 0);
+    return (msg_queue_id == -1) ? -1 : msg_queue_id;
+}
+
+// Kill a DC process
+void kill_dc(int dc_id) {
+    char log_msg[100];
+    FILE *cmd;
+    char pid_str[10];
+    char command[50];
+
+    snprintf(command, sizeof(command), "pgrep -f dc_%02d", dc_id);
+    cmd = popen(command, "r");
+
+    if (cmd) {
+        if (fgets(pid_str, sizeof(pid_str), cmd) != NULL) {
+            int pid = atoi(pid_str);
+            if (kill(pid, SIGHUP) == 0) {
+                snprintf(log_msg, sizeof(log_msg), "DX WOD rolled kill DC-%02d – Successfully killed process %d", dc_id, pid);
+            } else {
+                snprintf(log_msg, sizeof(log_msg), "DX WOD rolled kill DC-%02d – Failed to kill process %d", dc_id, pid);
+            }
+        } else {
+            snprintf(log_msg, sizeof(log_msg), "DX WOD rolled kill DC-%02d – No such process found", dc_id);
+        }
+        pclose(cmd);
+    } else {
+        snprintf(log_msg, sizeof(log_msg), "DX WOD rolled kill DC-%02d – Error executing pgrep", dc_id);
+    }
+    log_event(log_msg);
+}
