@@ -19,7 +19,7 @@
 #define SHM_KEY 16535       // Shared Memory Key for DX
 #define MSG_QUEUE_KEY 1234  // Message Queue Key for DCs & DR
 #define MAX_RETRIES 100     // Max retries for shared memory
-#define LOG_FILE dc.log
+#define LOG_FILE "dx.log"
 
 // Function Declarations
 int attach_shared_memory();
