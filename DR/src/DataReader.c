@@ -1,6 +1,6 @@
-/**
- * @file main.c
- * @brief Data Reader (DR) application for the Hoochamacallit System
+ /* programmer name : krishna kachhiapatel 
+ * main.c
+ * @brData Reader (DR) application for the Hoochamacallit System
  */
 
 #include "drcommon.h"
@@ -209,8 +209,8 @@
                  break;
              }
          } else {
-             pid_t sender_pid = msg.mData.pid;
-             int status = msg.mData.status;
+            pid_t sender_pid = msg.mData.machine_id;  // Or extract it from mtext if that's how it's stored
+            int status = msg.mData.status;
              
              int dc_idx = find_dc_by_pid(sender_pid);
              

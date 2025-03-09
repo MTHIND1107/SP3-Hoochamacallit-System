@@ -22,14 +22,13 @@
  #define MSG_TYPE 1
  
  typedef struct {
-     pid_t pid;
-     int status;
- } MessageData;
- 
- typedef struct {
-     long mType;
-     MessageData mData;
- } Message;
+    long mType;
+    struct {
+        int machine_id;  // Instead of pid_t pid
+        int status;
+        char mtext[100]; // Add this to match DataCreator.c
+    } mData;
+} Message;
  
  /* Master list structure */
  #define MAX_DC_ROLES 10
