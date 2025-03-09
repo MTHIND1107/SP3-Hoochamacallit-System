@@ -1,20 +1,34 @@
-# Main Makefile
+# Main Makefile for Hoochamacallit System
 
-# Default target to build everything
-all: DC/bin/DataCreator DR/bin/DataReader DX/bin/DataCorruptor
+# Directories
+BIN_DIR = bin
+DR_DIR = DR
+DC_DIR = DC
+DX_DIR = DX
+INCLUDE_DIR = include
 
-# Targets to build each project
-DC/bin/DataCreator:
-	$(MAKE) -C DC
+# Make sure the directories exist
+$(shell mkdir -p $(BIN_DIR) $(DC_DIR)/$(BIN_DIR))
 
-DR/bin/DataReader:
-	$(MAKE) -C DR
+# Targets
+all: dr dc dx
 
-DX/bin/DataCorruptor:
-	$(MAKE) -C DX
+dr:
+	$(MAKE) -C $(DR_DIR)
+	cp $(DR_DIR)/$(BIN_DIR)/DR $(BIN_DIR)/
 
-# Clean up all projects
+dc:
+	$(MAKE) -C $(DC_DIR)
+
+dx:
+	$(MAKE) -C $(DX_DIR)
+	cp $(DX_DIR)/$(BIN_DIR)/DX $(BIN_DIR)/
+
+# Clean up
 clean:
-	$(MAKE) -C DC clean
-	$(MAKE) -C DR clean
-	$(MAKE) -C DX clean
+	$(MAKE) -C $(DR_DIR) clean
+	$(MAKE) -C $(DC_DIR) clean
+	$(MAKE) -C $(DX_DIR) clean
+	rm -f $(BIN_DIR)/*
+
+.PHONY: all dr dc dx clean
