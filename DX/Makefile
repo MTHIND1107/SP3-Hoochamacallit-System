@@ -1,22 +1,33 @@
-# Target to build the final executable
-bin/DataCorruptor: obj/DataCorruptor.o obj/dx_utils.o
-	gcc obj/DataCorruptor.o obj/dx_utils.o -o bin/DataCorruptor
+# Makefile for Data Corruptor (DX)
 
-# Rule for DataCorruptor.o
-obj/DataCorruptor.o: src/DataCorruptor.c inc/DataCorruptor.h
-	gcc -c src/DataCorruptor.c -Iinc -o obj/DataCorruptor.o
+# Compiler and flags
+CC = gcc
+CFLAGS = -Wall -Werror -g
+INCLUDES = -I../include
 
-# Rule for dx_utils.o
-obj/dx_utils.o: src/dx_utils.c inc/DataCorruptor.h
-	gcc -c src/dx_utils.c -Iinc -o obj/dx_utils.o
+# Directories
+BIN_DIR = bin
+OBJ_DIR = obj
+SRC_DIR = src
 
-# Rule to display a message (optional)
-ola:
-	@echo "Hello from the DataCorruptor Makefile!"
+# Make sure the directories exist
+$(shell mkdir -p $(BIN_DIR) $(OBJ_DIR))
 
-# Default target to build everything
-all: bin/DataCorruptor
+# Source files and objects
+SRC = $(wildcard $(SRC_DIR)/*.c)
+OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 
-# Rule to clean up generated files
+# Main target
+all: $(BIN_DIR)/DX
+
+$(BIN_DIR)/DX: $(OBJ)
+	$(CC) $(CFLAGS) -o $@ $^ -lrt
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+# Clean up
 clean:
-	rm -f obj/*.o bin/DataCorruptor
+	rm -f $(BIN_DIR)/* $(OBJ_DIR)/*.o
+
+.PHONY: all clean

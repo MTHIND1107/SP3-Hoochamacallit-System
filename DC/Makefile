@@ -1,18 +1,33 @@
-# Target to build the final executable
-bin/DataCreator: obj/DataCreator.o
-	gcc obj/DataCreator.o -o bin/DataCreator
+# Makefile for Data Creator (DC)
 
-# Rule for DataCreator.o
-obj/DataCreator.o: src/DataCreator.c inc/DataCreator.h
-	gcc -c src/DataCreator.c -Iinc -o obj/DataCreator.o
+# Compiler and flags
+CC = gcc
+CFLAGS = -Wall -Werror -g
+INCLUDES = -I../include
 
-# Rule to display a message (optional)
-ola:
-	@echo "Hello from the DataCreator Makefile!"
+# Directories
+BIN_DIR = bin
+OBJ_DIR = obj
+SRC_DIR = src
 
-# Default target to build everything
-all: bin/DataCreator
+# Make sure the directories exist
+$(shell mkdir -p $(BIN_DIR) $(OBJ_DIR))
 
-# Rule to clean up generated files
+# Source files and objects
+SRC = $(wildcard $(SRC_DIR)/*.c)
+OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
+
+# Main target
+all: $(BIN_DIR)/DC
+
+$(BIN_DIR)/DC: $(OBJ)
+	$(CC) $(CFLAGS) -o $@ $^ -lrt
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+# Clean up
 clean:
-	rm -f obj/*.o bin/DataCreator
+	rm -f $(BIN_DIR)/* $(OBJ_DIR)/*.o
+
+.PHONY: all clean
