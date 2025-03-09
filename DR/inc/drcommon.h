@@ -18,17 +18,15 @@
  #include <sys/msg.h>
  #include <sys/shm.h>
  
- /* Message structure */
+ /* Message structure to match DataCreator.c */
  #define MSG_TYPE 1
  
  typedef struct {
-    long mType;
-    struct {
-        int machine_id;  // Instead of pid_t pid
-        int status;
-        char mtext[100]; // Add this to match DataCreator.c
-    } mData;
-} Message;
+     long msg_type;
+     int machine_id;  /* Using machine_id instead of pid to match DC */
+     int status;
+     char mtext[100]; /* Text message from DC */
+ } Message;
  
  /* Master list structure */
  #define MAX_DC_ROLES 10
