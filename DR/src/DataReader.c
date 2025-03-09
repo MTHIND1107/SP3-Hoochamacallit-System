@@ -1,9 +1,9 @@
- /* programmer name : krishna kachhiapatel 
- * main.c
- * @brData Reader (DR) application for the Hoochamacallit System
+/**
+ * @file DataReader.c
+ * @brief Data Reader (DR) application for the Hoochamacallit System
  */
 
-#include "drcommon.h"
+ #include "drcommon.h"
 
  /* Global variables */
  int msgQueueId = -1;
@@ -78,7 +78,7 @@
               dc_idx + 1, pid);
      log_message(buffer);
      
-     return 0;
+     return dc_idx;
  }
  
  /* Remove DC from master list */
@@ -90,10 +90,13 @@
      pid_t pid = masterList->dc[index].dcProcessID;
      
      char buffer[256];
-     snprintf(buffer, sizeof(buffer), "DC-%02d [%d] %s from master list - %s", 
-              index + 1, pid, 
-              (strcmp(reason, "OFFLINE") == 0) ? "has gone OFFLINE - removing" : "removed",
-              reason);
+     if (strcmp(reason, "OFFLINE") == 0) {
+         snprintf(buffer, sizeof(buffer), "DC-%02d [%d] has gone OFFLINE - removing from master-list", 
+                 index + 1, pid);
+     } else {
+         snprintf(buffer, sizeof(buffer), "DC-%02d [%d] removed from master list - %s", 
+                 index + 1, pid, reason);
+     }
      log_message(buffer);
      
      /* Collapse the list */
@@ -124,6 +127,7 @@
  void check_for_non_responsive_dcs(void) {
      time_t current_time = time(NULL);
      
+     /* Check from highest index to lowest to avoid issues when removing elements */
      for (int i = masterList->numberOfDCs - 1; i >= 0; i--) {
          time_t last_time = masterList->dc[i].lastTimeHeardFrom;
          
@@ -176,6 +180,7 @@
          return EXIT_FAILURE;
      }
      
+     /* Initialize master list */
      masterList->msgQueueID = msgQueueId;
      masterList->numberOfDCs = 0;
      
@@ -201,7 +206,7 @@
          }
          
          /* Try to receive a message (non-blocking) */
-         bytes_read = msgrcv(msgQueueId, &msg, sizeof(msg.mData), 0, IPC_NOWAIT);
+         bytes_read = msgrcv(msgQueueId, &msg, sizeof(msg) - sizeof(long), 0, IPC_NOWAIT);
          
          if (bytes_read == -1) {
              if (errno != ENOMSG) {
@@ -209,8 +214,17 @@
                  break;
              }
          } else {
-            pid_t sender_pid = msg.mData.machine_id;  // Or extract it from mtext if that's how it's stored
-            int status = msg.mData.status;
+             /* Extract PID from message text or use machine_id directly */
+             pid_t sender_pid = msg.machine_id;
+             int status = msg.status;
+             
+             /* If needed, parse PID from mtext field - uncomment if your DC stores PID in mtext */
+             /*
+             pid_t parsed_pid;
+             if (sscanf(msg.mtext, "PID: %d", &parsed_pid) == 1) {
+                 sender_pid = parsed_pid;
+             }
+             */
              
              int dc_idx = find_dc_by_pid(sender_pid);
              
@@ -231,6 +245,9 @@
          /* Sleep for 1.5 seconds before next iteration */
          usleep(1500000);
      }
+     
+     /* Cleanup resources */
+     cleanup();
      
      return EXIT_SUCCESS;
  }
