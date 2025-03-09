@@ -5,14 +5,7 @@
 //only log messages allowed no other ouput to the screen.
 //10 DC should be running
 //DC needs to know the way queue is being used in DR
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <time.h>
-#include <sys/ipc.h>
-#include <sys/msg.h>
-#include ../inc/DataCreator.h
+#include "DataCreator.h"
 
 #define MSG_QUEUE_KEY 1234
 #define LOG_FILE "dc_log.txt"
@@ -122,7 +115,7 @@ void successMessage(int msgQueueId, pid_t pid){
     size_t bufferLength;
     messageBuffer.msg_type = 1; ;
     //messageBuffer contains the PID and the first message
-    snprintf(messageBuffer.mtext, sizeof(sbuf.mtext), "PID: %d, %s", pid, status_messages[0]);
+    snprintf(messageBuffer.mtext, sizeof(messageBuffer.mtext), "PID: %d, %s", pid, status_messages[0]);
     bufferLength = strlen(messageBuffer.mtext) + 1;
     // Initial message sent to DR.
     if (msgsnd(msgQueueId, &messageBuffer, bufferLength, IPC_NOWAIT) < 0) {

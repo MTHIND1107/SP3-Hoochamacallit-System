@@ -62,7 +62,7 @@
  void check_for_non_responsive_dcs(void);
  
  /* Logging function */
- static inline void log_message(const char* message) {
+ inline void log_message(const char* message) {
      if (logFile == NULL) {
          logFile = fopen("/tmp/dataMonitor.log", "a");
          if (logFile == NULL) {
