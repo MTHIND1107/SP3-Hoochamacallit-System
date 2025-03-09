@@ -12,6 +12,7 @@
 #include <time.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
+#include ../inc/DataCreator.h
 
 #define MSG_QUEUE_KEY 1234
 #define LOG_FILE "dc_log.txt"
@@ -23,6 +24,7 @@ struct message {
     long msg_type;
     int machine_id;
     int status;
+    char mtext[100];
 };
 
 // Status Codes
@@ -46,13 +48,13 @@ const char *status_messages[] = {
     "Machine is Off-line"
 };
 int main(void){
-    message_buf messageBuffer;
+    struct message messageBuffer;
     size_t bufferLength;
     pid_t pid = getpid();
     //Checking for the message queue
     int msgQueueId = msgQueueExists();
     //If queue id found, then the first message sent to the DR
-    successMessage(msgQueueId);
+    successMessage(msgQueueId, pid);
     //This is the main loop where the random messages are sent until the random number lands on Machine is off-line.
     srand(time(NULL));
     while (1) {
@@ -115,10 +117,10 @@ int msgQueueExists(void){
 * Description: Sends the initial message after the message queue is found.
 *              And laso logs in the message for DC.
 */
-void successMessage(int msgQueueId){
-    message_buf messageBuffer;
+void successMessage(int msgQueueId, pid_t pid){
+    struct message messageBuffer;
     size_t bufferLength;
-    messageBuffer.mtype = 1;
+    messageBuffer.msg_type = 1; ;
     //messageBuffer contains the PID and the first message
     snprintf(messageBuffer.mtext, sizeof(sbuf.mtext), "PID: %d, %s", pid, status_messages[0]);
     bufferLength = strlen(messageBuffer.mtext) + 1;
