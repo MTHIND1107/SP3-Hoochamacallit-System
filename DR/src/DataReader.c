@@ -3,7 +3,7 @@
  * @brief Data Reader (DR) application for the Hoochamacallit System
  */
 
- #include "drcommon.h"
+#include "../inc/drcommon.h"
 
  /* Global variables */
  int msgQueueId = -1;

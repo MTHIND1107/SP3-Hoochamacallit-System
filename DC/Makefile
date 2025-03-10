@@ -3,7 +3,7 @@
 # Compiler and flags
 CC = gcc
 CFLAGS = -Wall -Werror -g
-INCLUDES = -I../include
+INCLUDES = -I./include
 
 # Directories
 BIN_DIR = bin
@@ -14,13 +14,13 @@ SRC_DIR = src
 $(shell mkdir -p $(BIN_DIR) $(OBJ_DIR))
 
 # Source files and objects
-SRC = $(wildcard $(SRC_DIR)/*.c)
+SRC = $(wildcard $(SRC_DIR)/*.c) $(SRC_DIR)/DataCreator.c
 OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 
 # Main target
-all: $(BIN_DIR)/DC
+all: $(BIN_DIR)/DataCreator
 
-$(BIN_DIR)/DC: $(OBJ)
+$(BIN_DIR)/DataCreator: $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ -lrt
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c

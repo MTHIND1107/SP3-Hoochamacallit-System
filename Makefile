@@ -15,14 +15,16 @@ all: dr dc dx
 
 dr:
 	$(MAKE) -C $(DR_DIR)
-	cp $(DR_DIR)/$(BIN_DIR)/DR $(BIN_DIR)/
+	cp $(DR_DIR)/$(BIN_DIR)/DataReader $(BIN_DIR)/
 
 dc:
 	$(MAKE) -C $(DC_DIR)
+	cp $(DC_DIR)/$(BIN_DIR)/DataCreator $(BIN_DIR)/
+
 
 dx:
 	$(MAKE) -C $(DX_DIR)
-	cp $(DX_DIR)/$(BIN_DIR)/DX $(BIN_DIR)/
+	cp $(DX_DIR)/$(BIN_DIR)/DataCorruptor $(BIN_DIR)/
 
 # Clean up
 clean:
