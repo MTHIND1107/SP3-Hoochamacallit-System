@@ -10,6 +10,7 @@
  int shmId = -1;
  MasterList* masterList = NULL;
  FILE* logFile = NULL;
+ int cleanup_done = 0;  // Flag to prevent multiple cleanups
  
  /* Signal handler */
  void signal_handler(int sig) {
@@ -22,6 +23,12 @@
  
  /* Cleanup function */
  void cleanup(void) {
+     // Prevent double cleanup
+     if (cleanup_done) {
+         return;
+     }
+     cleanup_done = 1;
+     
      log_message("DR cleanup initiated");
      
      if (msgQueueId != -1) {
@@ -29,23 +36,29 @@
              perror("msgctl failed in cleanup");
          } else {
              log_message("Message queue removed successfully");
+             msgQueueId = -1;
          }
      }
      
-     if (masterList != NULL) {
+     if (masterList != NULL && masterList != (void *)-1) {
          if (shmdt(masterList) == -1) {
              perror("shmdt failed in cleanup");
+         } else {
+             masterList = NULL;
          }
      }
      
      if (shmId != -1) {
          if (shmctl(shmId, IPC_RMID, NULL) == -1) {
              perror("shmctl failed in cleanup");
+         } else {
+             shmId = -1;
          }
      }
      
      if (logFile != NULL) {
          fclose(logFile);
+         logFile = NULL;
      }
      
      log_message("All DCs have gone offline or terminated - DR TERMINATING");
@@ -145,11 +158,8 @@
      signal(SIGINT, signal_handler);
      signal(SIGTERM, signal_handler);
      
-     /* Register cleanup function */
-     atexit(cleanup);
-     
      /* Initialize message queue */
-     key_t msgKey = ftok(".", 16534);
+     key_t msgKey = ftok(".", 16535);  // Changed from 16534 to 16535 to match requirements
      if (msgKey == -1) {
          log_message("ftok failed for message queue");
          return EXIT_FAILURE;
@@ -218,14 +228,6 @@
              pid_t sender_pid = msg.machine_id;
              int status = msg.status;
              
-             /* If needed, parse PID from mtext field - uncomment if your DC stores PID in mtext */
-             /*
-             pid_t parsed_pid;
-             if (sscanf(msg.mtext, "PID: %d", &parsed_pid) == 1) {
-                 sender_pid = parsed_pid;
-             }
-             */
-             
              int dc_idx = find_dc_by_pid(sender_pid);
              
              if (dc_idx == -1) {
@@ -246,7 +248,7 @@
          usleep(1500000);
      }
      
-     /* Cleanup resources */
+     /* Cleanup resources - call manually instead of using atexit */
      cleanup();
      
      return EXIT_SUCCESS;
