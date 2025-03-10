@@ -19,12 +19,12 @@ dr:
 
 dc:
 	$(MAKE) -C $(DC_DIR)
-	cp $(DX_DIR)/$(BIN_DIR)/DC $(BIN_DIR)/
+	cp $(DC_DIR)/$(BIN_DIR)/DataCreator $(BIN_DIR)/
 
 
 dx:
 	$(MAKE) -C $(DX_DIR)
-	cp $(DX_DIR)/$(BIN_DIR)/DX $(BIN_DIR)/
+	cp $(DX_DIR)/$(BIN_DIR)/DataCorruptor $(BIN_DIR)/
 
 # Clean up
 clean:

@@ -1,4 +1,4 @@
-#include "DataCorruptor.h"
+#include "../inc/DataCorruptor.h"
 
 // Attach to shared memory and retry if not found
 int attach_shared_memory() {

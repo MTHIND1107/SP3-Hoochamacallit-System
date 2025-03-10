@@ -5,7 +5,7 @@
 //only log messages allowed no other ouput to the screen.
 //10 DC should be running
 //DC needs to know the way queue is being used in DR
-#include "DataCreator.h"
+#include "../inc/DataCreator.h"
 
 #define MSG_QUEUE_KEY 1234
 #define LOG_FILE "dc_log.txt"
