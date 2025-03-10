@@ -3,7 +3,7 @@
 # Compiler and flags
 CC = gcc
 CFLAGS = -Wall -Werror -g
-INCLUDES = -I../include
+INCLUDES = -I./include
 
 # Directories
 BIN_DIR = bin

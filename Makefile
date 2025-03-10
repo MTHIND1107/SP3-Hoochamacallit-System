@@ -15,7 +15,7 @@ all: dr dc dx
 
 dr:
 	$(MAKE) -C $(DR_DIR)
-	cp $(DR_DIR)/$(BIN_DIR)/DR $(BIN_DIR)/
+	cp $(DR_DIR)/$(BIN_DIR)/DataReader $(BIN_DIR)/
 
 dc:
 	$(MAKE) -C $(DC_DIR)
