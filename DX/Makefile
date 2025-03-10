@@ -3,7 +3,7 @@
 # Compiler and flags
 CC = gcc
 CFLAGS = -Wall -Werror -g
-INCLUDES = -I../include
+INCLUDES = -I./inc
 
 # Directories
 BIN_DIR = bin
@@ -14,7 +14,7 @@ SRC_DIR = src
 $(shell mkdir -p $(BIN_DIR) $(OBJ_DIR))
 
 # Source files and objects
-SRC = $(wildcard $(SRC_DIR)/*.c)
+SRC = $(wildcard $(SRC_DIR)/*.c) $(SRC_DIR)/DataCorruptor.c
 OBJ = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
 
 # Main target

@@ -19,6 +19,8 @@ dr:
 
 dc:
 	$(MAKE) -C $(DC_DIR)
+	cp $(DX_DIR)/$(BIN_DIR)/DC $(BIN_DIR)/
+
 
 dx:
 	$(MAKE) -C $(DX_DIR)
